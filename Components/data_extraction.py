@@ -6,6 +6,7 @@ directory = '/Users/BenBurkert/Library/CloudStorage/OneDrive-bwedu/Studium/OSU/W
 
 # loop through each folder in the directory
 for foldername in os.listdir(directory):
+    data = {}
     # check if the current item in the directory is a folder
     if os.path.isdir(os.path.join(directory, foldername)):
         # set the path to the Excel file in the current folder
@@ -14,5 +15,10 @@ for foldername in os.listdir(directory):
         wb = load_workbook(excel_path)
         # select the worksheet
         ws = wb.worksheets[0]
-        # get value out of ws to test data extraction
-        print("Value in A3:", ws["A3"].value)
+        # Loop through the rows
+        for row in ws.iter_rows(min_row=7, values_only=True):
+            data = {
+                "paper_title": row[0],
+                "paper_type": row[0]
+            }
+            print(data)
