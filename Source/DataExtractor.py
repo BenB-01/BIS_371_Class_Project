@@ -1,14 +1,13 @@
-import os
 from openpyxl import load_workbook
 
 
-class DataExtracor:
+class DataExtractor:
 
-    def __init__(self, directory):
-        self._directory = directory
+    def __init__(self, file_path):
+        self._file_path = file_path
 
-    def get_paper_data(self, sheet_path, row):
-        wb = load_workbook(sheet_path)
+    def get_paper_data(self, row):
+        wb = load_workbook(self._file_path)
         ws = wb.worksheets[0]
         paper_data = {
             "paper_title": ws["A" + str(row)].value,
@@ -24,8 +23,9 @@ class DataExtracor:
         }
         return paper_data
 
-    def get_faculty_department_data(self, sheet_path):
-        wb = load_workbook(sheet_path)
+    def get_faculty_department_data(self):
+        """Retrieving the data for the department the faculty member is in"""
+        wb = load_workbook(self._file_path)
         ws = wb.worksheets[0]
         names = ws["A3"].value.split(' ')
         faculty_department_data = {
@@ -34,12 +34,3 @@ class DataExtracor:
             "department": ws["B3"].value
         }
         return faculty_department_data
-
-
-
-
-da = DataExtracor('/Users/BenBurkert/Library/CloudStorage/OneDrive-bwedu/Studium/OSU/Winter_Term/BIS 371/research_productivity')
-data = da.get_paper_data('/Users/BenBurkert/Library/CloudStorage/OneDrive-bwedu/Studium/OSU/Winter_Term/BIS 371/research_productivity/aarav_roberts/aarav_roberts.xlsx', 7)
-print(data)
-data_2 = da.get_faculty_department_data('/Users/BenBurkert/Library/CloudStorage/OneDrive-bwedu/Studium/OSU/Winter_Term/BIS 371/research_productivity/aarav_roberts/aarav_roberts.xlsx')
-print(data_2)
