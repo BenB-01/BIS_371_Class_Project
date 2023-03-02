@@ -8,6 +8,16 @@ class ETLPipeline:
     def __init__(self, directory):
         self._directory = directory
 
+    # create connection
+
+    # get data from files:
+    # 1. loop through folders
+    # 2. get person + department data
+    # 3. loop through rows and get paper data
+    # 4. for each paper: get activity data
+
+
+
     def get_all_paper_data(self):
         all_data = []
         for foldername in os.listdir(self._directory):
