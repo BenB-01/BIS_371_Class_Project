@@ -38,10 +38,10 @@ class ETLPipeline:
                 faculty_department_data = extractor.get_faculty_department_data(worksheet)
                 # get ids for department and person
                 department_id = department_dict[faculty_department_data['department']]
-                person_id = people_dict[faculty_department_data['f_name']]
+                people_id = people_dict[faculty_department_data['f_name']]
                 # insert people_department data to database
                 query = "INSERT INTO People_Department (People_ID, Department_ID) " \
-                        "VALUES ({}, {})".format(person_id, department_id)
+                        "VALUES ({}, {})".format(people_id, department_id)
                 db_interactor.insert_data(query)
 
                 # loop through the rows in the sheet
@@ -50,29 +50,38 @@ class ETLPipeline:
                     if worksheet["A" + str(row)].value is not None:
                         # get data related to a paper
                         raw_paper_data = extractor.get_paper_data(worksheet, row)
+                        paper_title = raw_paper_data['paper_title']
+                        paper_type = raw_paper_data['paper_type']
+                        target_name = raw_paper_data['target']
+                        tier = raw_paper_data['tier']
+                        role = raw_paper_data['role']
 
-                        # check if target is already in database, if yes get the id
-                        target = raw_paper_data['target']
-                        existing_value = db_interactor.search_by_name(target, 'Target')
-                        if existing_value is not None:
-                            target_id = existing_value[0][0]
-                        # if not: insert target into the database, get the id (last inserted)
-                        else:
-                            query = "INSERT INTO Target (Target_Name) VALUES ({})".format(target)
-                            db_interactor.insert_data(query)
-                            target_id = db_interactor.get_max_id('Target')
+                        # search for the target name in database
+                        existing_target = db_interactor.search_by_name(target_name, 'Target')
+                        # define query for the case that target is not yet in database
+                        query = "INSERT INTO Target (Target_Name) VALUES ('{}')".format(target_name)
+                        # check if target is already in database, if yes get the id, if not insert it and get max(id)
+                        target_id = db_interactor.get_id(existing_target, 'Target', query)
 
-                        # get id for paper_type
-
-                        # check if paper is already in database, if yes get the id
-
-                        # if not: insert paper into the database, get the id (last inserted)
+                        # search for the paper title in database
+                        existing_paper = db_interactor.search_by_name(paper_title, 'Paper')
+                        paper_type_id = paper_type_dict[paper_type]
+                        # define query for the case that the paper is not yet in the database
+                        query = "INSERT INTO Paper (Paper_Title, Paper_Type, Target, Tier)" \
+                                "VALUES ('{}', {}, {}, {})".format(paper_title, paper_type_id, target_id, tier)
+                        # check if paper is already in database, if yes get the id, if not insert it and get max(id)
+                        paper_id = db_interactor.get_id(existing_paper, 'Paper', query)
 
                         # insert paper_person
+                        role_id = role_dict[role]
+                        query = "INSERT INTO Paper_Person (Paper_ID, People_ID, Role)" \
+                                "VALUES ({}, {}, {})".format(paper_id, people_id, role_id)
+                        db_interactor.insert_data(query)
 
                         # while loop for actvities of paper
                         # get id for activity type
                         # insert actvity
+                        # coathors still missing
 
         # disconect from database
         db_interactor.disconnect()

@@ -19,7 +19,6 @@ class DatabaseInteractor:
         except Exception as err:
             print("Error executing query...\n", err)
             exit(1)
-
         return self._connection
 
     def disconnect(self):
@@ -39,6 +38,17 @@ class DatabaseInteractor:
             exit(1)
         return value_dict
 
+    def get_id(self, existing_value, table, query):
+        """Getting the id of a record."""
+        # check if value is already in database, if yes get the id
+        if len(existing_value) != 0:
+            record_id = existing_value[0][0]
+        # if not: insert target into the database, get the id (last inserted)
+        else:
+            self.insert_data(query)
+            record_id = self.get_max_id(table)
+        return record_id
+
     def get_max_id(self, table):
         """Retrieving the id for the record that was last inserted."""
         query = "SELECT MAX({}) FROM {}".format(table + "_ID", table)
@@ -49,7 +59,7 @@ class DatabaseInteractor:
         except Exception as err:
             print("Error executing query...\n", err)
             exit(1)
-        return result
+        return result[0]
 
     def search_by_name(self, name, table):
         """Checking if a value already exists in a database."""
@@ -74,6 +84,5 @@ class DatabaseInteractor:
         except Exception as err:
             print("Error executing query...\n", err)
             exit(1)
-
         self._connection.commit()
         cursor.close()
