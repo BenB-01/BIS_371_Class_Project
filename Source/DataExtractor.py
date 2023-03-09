@@ -27,11 +27,27 @@ class DataExtractor:
         }
         return paper_data
 
-    def get_activity_data(self):
-        pass
+    def get_activity_data(self, worksheet, row):
+        """Retrieving all the activities related to one paper."""
+        activity_data = {
+            "activity_1": [worksheet["K" + str(row)].value, worksheet["L" + str(row)].value]
+        }
+        counter = 1
+        maximum_row = worksheet.max_row
+        # as long as no new paper is listed in the file, add activities to dictionary
+        while worksheet["A" + str(row + counter)].value is None:
+            # check if the row number is higher than the last one in the sheet with values, if yes: stop the loop
+            if (row + counter) <= maximum_row:
+                key = f"activity_{counter + 1}"
+                value = [worksheet["K" + str(row + counter)].value, worksheet["L" + str(row + counter)].value]
+                activity_data[key] = value
+                counter += 1
+            else:
+                break
+        return activity_data
 
     def get_faculty_department_data(self, worksheet):
-        """Retrieving the data for the department the faculty member is in."""
+        """Retrieving the data for the department in which the faculty member is in."""
         names = worksheet["A3"].value.split(' ')
         faculty_department_data = {
             "f_name": names[0],

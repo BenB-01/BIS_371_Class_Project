@@ -42,6 +42,8 @@ class ETLPipeline:
                 # insert people_department data to database
                 query = "INSERT INTO People_Department (People_ID, Department_ID) " \
                         "VALUES ({}, {})".format(people_id, department_id)
+                print('- Executing People_Department -')
+                print('-> ', faculty_department_data['f_name'], faculty_department_data['department'])
                 db_interactor.insert_data(query)
 
                 # loop through the rows in the sheet
@@ -54,12 +56,16 @@ class ETLPipeline:
                         paper_type = raw_paper_data['paper_type']
                         target_name = raw_paper_data['target']
                         tier = raw_paper_data['tier']
+                        if tier is None:
+                            tier = 'NULL'
                         role = raw_paper_data['role']
 
                         # search for the target name in database
                         existing_target = db_interactor.search_by_name(target_name, 'Target')
                         # define query for the case that target is not yet in database
                         query = "INSERT INTO Target (Target_Name) VALUES ('{}')".format(target_name)
+                        print('- Executing Target -')
+                        print('-> ', target_name)
                         # check if target is already in database, if yes get the id, if not insert it and get max(id)
                         target_id = db_interactor.get_id(existing_target, 'Target', query)
 
@@ -69,6 +75,8 @@ class ETLPipeline:
                         # define query for the case that the paper is not yet in the database
                         query = "INSERT INTO Paper (Paper_Title, Paper_Type, Target, Tier)" \
                                 "VALUES ('{}', {}, {}, {})".format(paper_title, paper_type_id, target_id, tier)
+                        print('- Executing Paper -')
+                        print('-> ', paper_title)
                         # check if paper is already in database, if yes get the id, if not insert it and get max(id)
                         paper_id = db_interactor.get_id(existing_paper, 'Paper', query)
 
@@ -76,16 +84,28 @@ class ETLPipeline:
                         role_id = role_dict[role]
                         query = "INSERT INTO Paper_Person (Paper_ID, People_ID, Role)" \
                                 "VALUES ({}, {}, {})".format(paper_id, people_id, role_id)
+                        print('- Executing Paper_Person -')
+                        print('-> ', paper_title, faculty_department_data['f_name'])
                         db_interactor.insert_data(query)
 
-                        # while loop for actvities of paper
-                        # get id for activity type
-                        # insert actvity
+                        # get all the activities related to one paper
+                        activities = extractor.get_activity_data(worksheet, row)
+                        # loop through the activites and save them in the database
+                        for key, (activity_date, activity_type) in activities.items():
+                            activity_type = activity_type
+                            activity_type_id = activity_type_dict[activity_type]
+                            activity_date = activity_date.date()
+                            paper_id = db_interactor.get_max_id('Paper')
+                            query = "INSERT INTO Activity (Activity_Date, Activity_Type, Paper_ID)" \
+                                    "VALUES ('{}', {}, {})".format(activity_date, activity_type_id, paper_id)
+                            print('- Executing Activity -')
+                            print('-> ', activity_date, activity_type)
+                            db_interactor.insert_data(query)
+
                         # coathors still missing
 
         # disconect from database
         db_interactor.disconnect()
-
 
 
 etl = ETLPipeline('/Users/BenBurkert/Library/CloudStorage/OneDrive-bwedu/Studium/OSU/Winter_Term/BIS 371/research_productivity')

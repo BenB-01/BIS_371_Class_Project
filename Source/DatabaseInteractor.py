@@ -19,7 +19,7 @@ class DatabaseInteractor:
         except Exception as err:
             print("Error executing query...\n", err)
             exit(1)
-        return self._connection
+        return self
 
     def disconnect(self):
         """Closing the connection to the database"""
