@@ -13,19 +13,25 @@ class DataExtractor:
         return ws
 
     def get_paper_data(self, worksheet, row):
-        """Retrieving all the data related to one paper in one Excel file. Relates to one row in the file."""
+        """Retrieving the data related to one paper."""
         paper_data = {
             "paper_title": worksheet["A" + str(row)].value,
-            "paper_type": worksheet["B" + str(row)].value,
+            "target_type": worksheet["B" + str(row)].value,
             "target": worksheet["C" + str(row)].value,
             "tier": worksheet["D" + str(row)].value,
+            "role": worksheet["J" + str(row)].value,
+        }
+        return paper_data
+
+    def get_coauthor_data(self, worksheet, row):
+        """Retrieving all the coauthors for one paper."""
+        coauthor_data = {
             "co_author_1": worksheet["E" + str(row)].value,
             "co_author_2": worksheet["F" + str(row)].value,
             "co_author_3": worksheet["G" + str(row)].value,
             "co_author_4": worksheet["H" + str(row)].value,
-            "role": worksheet["J" + str(row)].value,
         }
-        return paper_data
+        return coauthor_data
 
     def get_activity_data(self, worksheet, row):
         """Retrieving all the activities related to one paper."""

@@ -61,12 +61,14 @@ class DatabaseInteractor:
             exit(1)
         return result[0]
 
-    def search_by_name(self, name, table):
+    def search_for_duplicate(self, name, table, paper_id=None):
         """Checking if a value already exists in a database."""
         if table == 'Paper':
             query = "SELECT * FROM Paper WHERE Paper_Title = '{}'".format(str(name))
-        else:
+        elif table == 'Target':
             query = "SELECT * FROM Target WHERE Target_Name = '{}'".format(str(name))
+        else:
+            query = "SELECT * FROM Co_Author WHERE Co_Author_Name = '{}' AND Paper_ID ={}".format(str(name), paper_id)
         cursor = self._connection.cursor()
         try:
             cursor.execute(query)

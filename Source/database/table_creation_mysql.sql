@@ -1,0 +1,113 @@
+CREATE TABLE Activity
+(Activity_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+Activity_Date DATE NOT NULL,
+Activity_Type INT NOT NULL,
+Paper_ID INT NOT NULL);
+
+CREATE TABLE Activity_Type
+(Activity_Type_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+Activity_Type_Name VARCHAR(50) NOT NULL);
+
+CREATE TABLE Target
+(Target_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+Target_Name VARCHAR(200) NOT NULL,
+Target_Type INT NOT NULL);
+
+CREATE TABLE Target_Type
+(Target_Type_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+Target_Type_Name VARCHAR(20) NOT NULL);
+
+CREATE TABLE Paper
+(Paper_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+Paper_Title VARCHAR(100) NOT NULL,
+Target INT NOT NULL,
+Tier INT NULL);
+
+CREATE TABLE People
+(People_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+F_Name VARCHAR(50) NOT NULL, 
+L_Name VARCHAR(50) NOT NULL);
+
+CREATE TABLE Department
+(Department_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+Department_Name VARCHAR(50) NOT NULL);
+
+CREATE TABLE Paper_Person
+(Paper_ID INT NOT NULL, 
+People_ID INT NOT NULL,
+Role INT NOT NULL);
+
+CREATE TABLE People_Department
+(People_ID INT NOT NULL, 
+Department_ID INT NOT NULL);
+
+CREATE TABLE Role 
+(Role_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+Role_Type_Name VARCHAR(50) NOT NULL);
+
+CREATE TABLE Co_Author
+(Co_Author_Name VARCHAR(50) NOT NULL,
+Paper_ID INT NOT NULL);
+
+/*** ALTER TABLE Activity
+ADD CONSTRAINT PK_Activity PRIMARY KEY (Activity_ID);
+
+ALTER TABLE Activity_Type
+ADD CONSTRAINT PK_Activity_Type PRIMARY KEY (Activity_Type_ID);
+
+ALTER TABLE Paper
+ADD CONSTRAINT PK_Paper PRIMARY KEY (Paper_ID);
+
+ALTER TABLE Paper_Type
+ADD CONSTRAINT PK_Paper_Type PRIMARY KEY (Paper_Type_ID);
+
+ALTER TABLE People
+ADD CONSTRAINT PK_People PRIMARY KEY (People_ID);
+
+ALTER TABLE Department
+ADD CONSTRAINT PK_Department PRIMARY KEY (Department_ID); ***/
+
+ALTER TABLE Co_Author
+ADD CONSTRAINT PK_Co_Author PRIMARY KEY (Paper_ID, Co_Author_Name);
+
+ALTER TABLE Paper_Person
+ADD CONSTRAINT PK_Paper_Person PRIMARY KEY (Paper_ID, People_ID);
+
+ALTER TABLE People_Department
+ADD CONSTRAINT PK_People_Department PRIMARY KEY (Department_ID, People_ID);
+
+-- ALTER TABLE Role
+-- ADD CONSTRAINT PK_Role PRIMARY KEY (Role_ID);
+
+-- ALTER TABLE Target
+-- ADD CONSTRAINT PK_Target PRIMARY KEY (Target_ID); 
+
+ALTER TABLE Target ADD CONSTRAINT fk1_Target FOREIGN KEY (Target_Type)
+REFERENCES Target_Type (Target_Type_ID);
+
+ALTER TABLE Activity ADD CONSTRAINT fk1_Activity FOREIGN KEY (Activity_Type) 
+REFERENCES Activity_Type (Activity_Type_ID);
+
+ALTER TABLE Activity ADD CONSTRAINT fk2_Activity FOREIGN KEY (Paper_ID) 
+REFERENCES Paper (Paper_ID);
+
+ALTER TABLE Paper ADD CONSTRAINT fk1_Paper FOREIGN KEY (Target) 
+REFERENCES Target (Target_ID);
+
+ALTER TABLE Paper_Person ADD CONSTRAINT fk1_Paper_Person FOREIGN KEY (Paper_ID) 
+REFERENCES Paper (Paper_ID);
+
+ALTER TABLE Paper_Person ADD CONSTRAINT fk2_Paper_Person FOREIGN KEY (People_ID) 
+REFERENCES People (People_ID);
+
+ALTER TABLE Paper_Person ADD CONSTRAINT fk3_Paper_Person FOREIGN KEY (Role) 
+REFERENCES Role (Role_ID);
+
+ALTER TABLE People_Department ADD CONSTRAINT fk1_People_Department FOREIGN KEY (People_ID) 
+REFERENCES People (People_ID);
+
+ALTER TABLE People_Department ADD CONSTRAINT fk2_People_Department FOREIGN KEY (Department_ID) 
+REFERENCES Department (Department_ID);
+
+ALTER TABLE Co_Author ADD CONSTRAINT fk1_Co_Author FOREIGN KEY (Paper_ID) 
+REFERENCES Paper (Paper_ID);

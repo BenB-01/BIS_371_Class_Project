@@ -19,7 +19,7 @@ class ETLPipeline:
         # load data from nontransaction tables to know what id each value has
         department_dict = db_interactor.get_allowed_values('Department')
         people_dict = db_interactor.get_allowed_values('People')
-        paper_type_dict = db_interactor.get_allowed_values('Paper_Type')
+        target_type_dict = db_interactor.get_allowed_values('Target_Type')
         activity_type_dict = db_interactor.get_allowed_values('Activity_Type')
         role_dict = db_interactor.get_allowed_values('Role')
 
@@ -53,7 +53,7 @@ class ETLPipeline:
                         # get data related to a paper
                         raw_paper_data = extractor.get_paper_data(worksheet, row)
                         paper_title = raw_paper_data['paper_title']
-                        paper_type = raw_paper_data['paper_type']
+                        target_type = raw_paper_data['target_type']
                         target_name = raw_paper_data['target']
                         tier = raw_paper_data['tier']
                         if tier is None:
@@ -61,20 +61,21 @@ class ETLPipeline:
                         role = raw_paper_data['role']
 
                         # search for the target name in database
-                        existing_target = db_interactor.search_by_name(target_name, 'Target')
+                        existing_target = db_interactor.search_for_duplicate(target_name, 'Target')
+                        target_type_id = target_type_dict[target_type]
                         # define query for the case that target is not yet in database
-                        query = "INSERT INTO Target (Target_Name) VALUES ('{}')".format(target_name)
+                        query = "INSERT INTO Target (Target_Name, Target_Type) " \
+                                "VALUES ('{}', {})".format(target_name, target_type_id)
                         print('- Executing Target -')
                         print('-> ', target_name)
                         # check if target is already in database, if yes get the id, if not insert it and get max(id)
                         target_id = db_interactor.get_id(existing_target, 'Target', query)
 
                         # search for the paper title in database
-                        existing_paper = db_interactor.search_by_name(paper_title, 'Paper')
-                        paper_type_id = paper_type_dict[paper_type]
+                        existing_paper = db_interactor.search_for_duplicate(paper_title, 'Paper')
                         # define query for the case that the paper is not yet in the database
-                        query = "INSERT INTO Paper (Paper_Title, Paper_Type, Target, Tier)" \
-                                "VALUES ('{}', {}, {}, {})".format(paper_title, paper_type_id, target_id, tier)
+                        query = "INSERT INTO Paper (Paper_Title, Target, Tier)" \
+                                "VALUES ('{}', {}, {})".format(paper_title, target_id, tier)
                         print('- Executing Paper -')
                         print('-> ', paper_title)
                         # check if paper is already in database, if yes get the id, if not insert it and get max(id)
@@ -87,6 +88,20 @@ class ETLPipeline:
                         print('- Executing Paper_Person -')
                         print('-> ', paper_title, faculty_department_data['f_name'])
                         db_interactor.insert_data(query)
+
+                        # insert coauthors of paper
+                        coauthors = extractor.get_coauthor_data(worksheet, row)
+                        for key, value in coauthors.items():
+                            # if there is a coauthor listed in the cell: insert into the database
+                            if value is not None:
+                                # check if the entry already exists in the database, if not: insert it
+                                existing_entry = db_interactor.search_for_duplicate(value, 'Co_Author', paper_id)
+                                if len(existing_entry) == 0:
+                                    query = "INSERT INTO Co_Author (Co_Author_Name, Paper_ID)" \
+                                            "VALUES ('{}', {})".format(value, paper_id)
+                                    print('- Executing Coauthor -')
+                                    print('-> ', value, paper_id)
+                                    db_interactor.insert_data(query)
 
                         # get all the activities related to one paper
                         activities = extractor.get_activity_data(worksheet, row)
