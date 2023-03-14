@@ -117,8 +117,6 @@ class ETLPipeline:
                             print('-> ', activity_date, activity_type)
                             db_interactor.insert_data(query)
 
-                        # coathors still missing
-
         # disconect from database
         db_interactor.disconnect()
 
