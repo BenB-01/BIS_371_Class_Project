@@ -3,18 +3,6 @@ import tkinter as tk
 from tkinter import filedialog
 # import class to interact with the database
 from DatabaseInteractor import DatabaseInteractor
-# import pyodbc
-
-# put connection information into variable connect string
-
-"""connStr = (
-    r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};" r"DBQ=C:Users\clarkena\Desktop\BIS371_project1.accdb;")  # connect to database
-try:
-    connection = pyodbc.connect(connStr)
-except Exception as err:
-    print("Error connecting...\n", str(err))
-    exit(1)
-cursor = connection.cursor()"""
 
 db_interactor = DatabaseInteractor()
 connection = db_interactor.connect()
@@ -25,45 +13,53 @@ cursor = connection.cursor()
 def submitted_data_find():
     display_textbox.delete("1.0", tk.END)
     try:
-        cursor.execute("SELECT Activity_Date FROM Activity WHERE Activity_Type = 1 ORDER BY Activity_Date")
+        cursor.execute("SELECT Paper_Title, Activity_Date FROM Paper, Activity "
+                       "WHERE Paper.Paper_ID = Activity.Paper_ID AND Activity.Activity_Type = 1 "
+                       "ORDER BY Activity.Activity_Date")
     except Exception as err:
         print("There was an issue executing the submitted query.", err)
     rows = cursor.fetchall()
     for row in rows:
-        display_textbox.insert("1.0", ("Submitted: " + '{:%Y-%m-%d}'.format(row[0]) + '\n'))
+        display_textbox.insert("1.0", ("Submitted: " + row[0] + " Date: " '{:%Y-%m-%d}'.format(row[1]) + '\n'))
 
 
 def accepted_data_find():
     display_textbox.delete("1.0", tk.END)
     try:
-        cursor.execute("SELECT Activity_Date FROM Activity WHERE Activity_Type = 2 ORDER BY Activity_Date")
+        cursor.execute("SELECT Paper_Title, Activity_Date FROM Paper, Activity "
+                       "WHERE Paper.Paper_ID = Activity.Paper_ID AND Activity.Activity_Type = 2 "
+                       "ORDER BY Activity.Activity_Date")
     except Exception as err:
         print("There was an issue executing the accepted query.", err)
     rows = cursor.fetchall()
     for row in rows:
-        display_textbox.insert("1.0", ("Accepted: " + '{:%Y-%m-%d}'.format(row[0]) + '\n'))
+        display_textbox.insert("1.0", ("Accepted: " + row[0] + " Date: " '{:%Y-%m-%d}'.format(row[1]) + '\n'))
 
 
 def rejected_data_find():
     display_textbox.delete("1.0", tk.END)
     try:
-        cursor.execute("SELECT Activity_Date FROM Activity WHERE Activity_Type = 3 ORDER BY Activity_Date")
+        cursor.execute("SELECT Paper_Title, Activity_Date FROM Paper, Activity "
+                       "WHERE Paper.Paper_ID = Activity.Paper_ID AND Activity.Activity_Type = 3 "
+                       "ORDER BY Activity.Activity_Date")
     except Exception as err:
         print("There was an issue executing the rejected query.", err)
     rows = cursor.fetchall()
     for row in rows:
-        display_textbox.insert("1.0", ("Rejected: " + '{:%Y-%m-%d}'.format(row[0]) + '\n'))
+        display_textbox.insert("1.0", ("Rejected: " + row[0] + " Date: " '{:%Y-%m-%d}'.format(row[1]) + '\n'))
 
 
 def rr_data_find():
     display_textbox.delete("1.0", tk.END)
     try:
-        cursor.execute("SELECT Activity_Date FROM Activity WHERE Activity_Type = 4 ORDER BY Activity_Date")
+        cursor.execute("SELECT Paper_Title, Activity_Date FROM Paper, Activity "
+                       "WHERE Paper.Paper_ID = Activity.Paper_ID AND Activity.Activity_Type = 4 "
+                       "ORDER BY Activity.Activity_Date")
     except Exception as err:
         print("There was an issue executing the R&R query.", err)
     rows = cursor.fetchall()
     for row in rows:
-        display_textbox.insert("1.0", ("R&R: " + '{:%Y-%m-%d}'.format(row[0]) + '\n'))
+        display_textbox.insert("1.0", ("R&R: " + row[0] + " Date: " '{:%Y-%m-%d}'.format(row[1]) + '\n'))
 
 
 # TKINTER WINDOW FORMATTING
