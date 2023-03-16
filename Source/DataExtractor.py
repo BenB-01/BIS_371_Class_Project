@@ -2,6 +2,7 @@ from openpyxl import load_workbook
 
 
 class DataExtractor:
+    """Class that deals with all the data extraction from the Excel files."""
 
     def __init__(self, file_path):
         self._file_path = file_path
