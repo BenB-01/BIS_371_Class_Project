@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: 2024 Ben Burkert
+--
+-- SPDX-License-Identifier: MIT
+
 INSERT INTO Department (Department_Name)
 VALUES ('Accounting'), ('Marketing'), ('Finance'), ('BIS'), ('Management'), ('Entrepreneurship');
 

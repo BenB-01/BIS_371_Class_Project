@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Ben Burkert
+#
+# SPDX-License-Identifier: MIT
+
 from DatabaseInteractor import DatabaseInteractor
 from DataExtractor import DataExtractor
 import os
@@ -121,5 +125,5 @@ class ETLPipeline:
         db_interactor.disconnect()
 
 
-etl = ETLPipeline('/Users/BenBurkert/Library/CloudStorage/OneDrive-bwedu/Studium/OSU/Winter_Term/BIS 371/research_productivity')
+etl = ETLPipeline('../../excel_data')
 etl.collect_and_store_data()

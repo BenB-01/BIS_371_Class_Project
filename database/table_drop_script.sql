@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: 2024 Ben Burkert
+--
+-- SPDX-License-Identifier: MIT
+
 ALTER TABLE Activity DROP CONSTRAINT fk1_Activity;
 ALTER TABLE Activity DROP CONSTRAINT fk2_Activity;
 -- ALTER TABLE Activity DROP CONSTRAINT PK_Activity;

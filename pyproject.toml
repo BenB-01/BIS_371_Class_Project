@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2024 Ben Burkert
+#
+# SPDX-License-Identifier: MIT
+
+[tool.poetry]
+name = "bis_371_class_project"
+version = "0.2.0"
+description = ""
+authors = ["Ben Burkert <benburkert3@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+openpyxl = "^3.1.5"
+mysql-connector-python = "^9.1.0"
+reuse = "^4.0.3"

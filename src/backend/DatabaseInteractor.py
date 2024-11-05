@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Ben Burkert
+#
+# SPDX-License-Identifier: MIT
+
 import mysql.connector as connector
 
 

@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: 2024 Ben Burkert
+--
+-- SPDX-License-Identifier: MIT
+
 CREATE TABLE Activity
 (Activity_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 Activity_Date DATE NOT NULL,
